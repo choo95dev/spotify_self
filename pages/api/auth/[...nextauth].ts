@@ -6,7 +6,6 @@ import spotifyWebApi,{LOGIN_URL} from "../../../lib/spotify";
 
 async function refreshAccessToken(token:JWT){
   try{
-    console.log("What is this token?? >>>>",token);
     spotifyWebApi.setAccessToken(token.accessToken);
     spotifyWebApi.setRefreshToken(token.refreshToken);
 
@@ -42,6 +41,13 @@ export default NextAuth({
       signIn:'/login'
     },
     callbacks:{
+      async session({session,token}){
+        session.user.accessToken = token.accessToken;
+        session.user.refreshToken = token.refreshToken;
+        session.user.name = token.name;
+        session.user.image = token.picture;
+        return session;
+      },
       async jwt({ token, account, user }){
         //initial sign in
         if(account && user){
@@ -62,13 +68,6 @@ export default NextAuth({
         //Access token expires, update or refresh the token
         return await refreshAccessToken(token);
 
-      },
-      async session({session,token}){
-        session.user.accessToken = token.accessToken;
-        session.user.refreshToken = token.refreshToken;
-        session.user.username = token.username;
-        
-        return session;
       }
     },
 });
