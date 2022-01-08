@@ -10,9 +10,9 @@ import { signOut, useSession } from "next-auth/react";
 
 function Sidebar() {
     const {data,status} = useSession();
-    console.log(data);
   return (
-    <div className="text-gray-500 p-5 text-sm border-gray-900">
+    //let  y to be scrollable
+    <div className="text-gray-500 p-5 text-sm border-gray-900 overflow-y-scroll scrollbar-hide h-screen">
       <div className="space-y-2">
         <button
           className="flex items-center space-x-2 hover:text-white"
