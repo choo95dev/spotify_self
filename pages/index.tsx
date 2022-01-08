@@ -1,14 +1,16 @@
+import { useSession } from "next-auth/react";
+import Center from "../components/Center";
 import Sidebar from "../components/Sidebar";
 
 export default function Home() {
   return (
     //initial div always have height of screen to create scrolling effects
     <div className="bg-black h-screen overflow-hidden">
-      <main className="">
+      <main className="flex">
         <Sidebar/>
-        {/* Center */}
-        {/* <div>player here</div> */}
+        <Center/>
       </main>
+              {/* <div>player here</div> */}
     </div>
   );
 }
