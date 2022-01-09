@@ -1,3 +1,4 @@
+import { profile } from "console";
 import { JWT } from "next-auth/jwt";
 import NextAuth from "next-auth/next";
 import SpotifyProvider from "next-auth/providers/spotify";
@@ -20,7 +21,7 @@ async function refreshAccessToken(token:JWT){
     console.log(error)
     return{
       ...token,
-      error: 'Refresh access token error'
+      error: 'RefreshAccessTokenError'
     }
   }
 }
@@ -45,6 +46,7 @@ export default NextAuth({
         session.user.accessToken = token.accessToken;
         session.user.refreshToken = token.refreshToken;
         session.user.name = token.name;
+        session.user.username = token.userName;
         session.user.image = token.picture;
         return session;
       },

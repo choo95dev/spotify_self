@@ -10,6 +10,7 @@ declare module "next-auth" {
         refreshToken:string;
         name:string;
         image:string;
+        username:string;
     }
   }
 }
@@ -20,6 +21,7 @@ declare module "next-auth/jwt" {
     /** This is an example. You can find me in types/next-auth.d.ts */
     refreshToken:string;
     accessToken:string;
-    username:string;
+    userName:string;
+    picture:string;
   }
 }
