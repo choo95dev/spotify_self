@@ -8,6 +8,8 @@ import {
 } from "@heroicons/react/outline";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { playListIdState } from "../atoms/playListAtom";
 import useSpotify from "../hooks/useSpotify";
 import { SpotifyPlayList } from "./type/spotifyType";
 
@@ -15,7 +17,7 @@ function Sidebar() {
   const spotifyApi = useSpotify();
   const { data: session, status } = useSession();
   const [playLists, setPlayList] = useState<SpotifyPlayList[]>([]);
-  const [playListId,setPlayListId] = useState<string>("");
+  const [playListId,setPlayListId] = useRecoilState<string>(playListIdState);
 
   useEffect(() => {
     async function fetchPlayList() {
@@ -30,7 +32,7 @@ function Sidebar() {
 
   return (
     //let  y to be scrollable
-    <div className="text-gray-500 p-5 text-sm border-gray-900 overflow-y-scroll scrollbar-hide h-screen">
+    <div className="text-gray-500 p-5 text-xs lg:text-sm border-gray-900 overflow-y-scroll scrollbar-hide h-screen sm:max-w-[12rem] lg:max-w-[15rem] hidden md:inline-flex">
       <div className="space-y-2">
         <button
           className="flex items-center space-x-2 hover:text-white"

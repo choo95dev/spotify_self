@@ -16,10 +16,33 @@ const colors = [
 function Center() {
   const { data: session, status } = useSession();
   const [color, setColor] = useState(null);
+  //Setter and getter
+  //const [playListId,setPlayListId] = useRecoilState<string>(playListIdState);
+
+  //useRecoilValue is readonly value
+  const playListId = useRecoilValue(playListIdState);
+  const spotifyApi = useSpotify();
+  const [playList,setPlayList] = useRecoilState<SpotifyPlayList>(playListState);
 
   useEffect(() => {
     setColor(shuffle(colors).pop());
-  }, [color]);
+  }, [playListId]);
+
+  useEffect(()=>{
+    async function getSpotifyPlayList(){
+      try{
+        const response = await spotifyApi.getPlaylist(playListId);
+        setPlayList(response.body);
+      }catch(error){
+        console.log("Something went wrong fetching playlist...",error);
+      }
+    }
+    if(playListId && spotifyApi.getAccessToken()){
+      getSpotifyPlayList();
+    }
+  },[spotifyApi,playListId,session]);
+
+  console.log("playlist",playList);
 
   if (status === "loading") {
     return renderLoading();
@@ -28,7 +51,7 @@ function Center() {
       <div className="flex-grow">
         <header className="absolute top-5 right-8">
           <div className="flex items-center bg-red-300 space-x-4 opacity-90 hover:opacity-80 cursor-pointer rounded-full p-1 pr-2">
-            {session.user.image ? (
+            {session?.user.image ? (
               <img
                 className="rounded-full w-10 h-10"
                 src={session.user.image}
@@ -43,7 +66,13 @@ function Center() {
         </header>
         <section
           className={`flex items-end space-x-7 bg-gradient-to-b to-black ${color} h-80 text-white p-8`}
-        ></section>
+        >
+          <img className="h-44 w-44 shadow-2xl" src={playList?.images?.[0].url} alt="album image" />
+          <div>
+            <p>PLAYLIST</p>
+            <h1 className="text-2xl md:text-3xl xl:text-5xl font-bold">{playList?.name}</h1>
+          </div>
+        </section>
       </div>
     );
   }
