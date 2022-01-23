@@ -1,7 +1,12 @@
 import { ChevronDownIcon } from "@heroicons/react/outline";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 import { shuffle } from "lodash";
+import { signOut, useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { playListIdState, playListState } from "../atoms/playListAtom";
+import useSpotify from "../hooks/useSpotify";
+import Songs from "./Songs";
+import { SpotifyPlayList } from "./type/spotifyType";
 
 const colors = [
   "from-indigo-500",
@@ -22,35 +27,37 @@ function Center() {
   //useRecoilValue is readonly value
   const playListId = useRecoilValue(playListIdState);
   const spotifyApi = useSpotify();
-  const [playList,setPlayList] = useRecoilState<SpotifyPlayList>(playListState);
+  const [playList, setPlayList] =
+    useRecoilState<SpotifyPlayList>(playListState);
 
   useEffect(() => {
     setColor(shuffle(colors).pop());
   }, [playListId]);
 
-  useEffect(()=>{
-    async function getSpotifyPlayList(){
-      try{
+  useEffect(() => {
+    async function getSpotifyPlayList() {
+      try {
         const response = await spotifyApi.getPlaylist(playListId);
         setPlayList(response.body);
-      }catch(error){
-        console.log("Something went wrong fetching playlist...",error);
+      } catch (error) {
+        console.log("Something went wrong fetching playlist...", error);
       }
     }
-    if(playListId && spotifyApi.getAccessToken()){
+    if (playListId && spotifyApi.getAccessToken()) {
       getSpotifyPlayList();
     }
-  },[spotifyApi,playListId,session]);
-
-  console.log("playlist",playList);
+  }, [spotifyApi, playListId, session]);
 
   if (status === "loading") {
     return renderLoading();
   } else {
     return (
-      <div className="flex-grow">
+      <div className="flex-grow h-screen overflow-y-scroll scrollbar-hide">
         <header className="absolute top-5 right-8">
-          <div className="flex items-center bg-red-300 space-x-4 opacity-90 hover:opacity-80 cursor-pointer rounded-full p-1 pr-2">
+          <div
+            className="flex items-center bg-black space-x-4 opacity-90 hover:opacity-80 cursor-pointer rounded-full p-1 pr-2 text-white"
+            onClick={()=>signOut()}
+          >
             {session?.user.image ? (
               <img
                 className="rounded-full w-10 h-10"
@@ -67,12 +74,21 @@ function Center() {
         <section
           className={`flex items-end space-x-7 bg-gradient-to-b to-black ${color} h-80 text-white p-8`}
         >
-          <img className="h-44 w-44 shadow-2xl" src={playList?.images?.[0].url} alt="album image" />
+          <img
+            className="h-44 w-44 shadow-2xl"
+            src={playList?.images?.[0].url}
+            alt="album image"
+          />
           <div>
             <p>PLAYLIST</p>
-            <h1 className="text-2xl md:text-3xl xl:text-5xl font-bold">{playList?.name}</h1>
+            <h1 className="text-2xl md:text-3xl xl:text-5xl font-bold">
+              {playList?.name}
+            </h1>
           </div>
         </section>
+        <div>
+          <Songs />
+        </div>
       </div>
     );
   }
